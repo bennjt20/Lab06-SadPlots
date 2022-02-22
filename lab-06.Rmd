@@ -1,7 +1,7 @@
 ---
 title: "Lab 06 - Sad plots"
-author: "Insert your name here"
-date: "Insert date here"
+author: "John Bennett"
+date: "Feb. 22, 2022"
 output: github_document
 ---
 
@@ -12,22 +12,109 @@ library(tidyverse)
 library(dsbox) 
 ```
 
-### Exercise 1
+```{r Housekeeping}
+library(usethis)
+use_git_config(user.name = "John Bennett", 
+               user.email = "bennjt20@wfu.edu")
+```
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+```{r Housekeeping2}
+library(tidyverse)
+```
+
+```{r Staffcsv}
+staff <- read_csv("data/instructional-staff.csv")
+```
+
+```{r pivot}
+staff_long <- staff %>%
+  pivot_longer(cols = -faculty_type, names_to = "year") %>%
+  mutate(value = as.numeric(value))
+```
+
+```{r lineplot}
+staff_long %>%
+  ggplot(aes(x = year, y = value, color = faculty_type)) +
+  geom_line()
+```
+
+```{r lineplot}
+staff_long %>%
+  ggplot(aes(x = year, y = value, group = faculty_type, color = faculty_type)) +
+  geom_line() +
+labs(x = "Years for which we have data",
+   y = "Percentage of hires, by type of faculty for each year",
+   title = "Instructional staff employees between 1975 and 2011",
+   color = "Faculty Type"
+ )
+```
+
+
+
+### Exercise 1
+Note: See Lineplot.png
+
+Q: a brief paragraph describing the choices you made in your improvement, specifically discussing what you didn’t like in the original plots and why, and how you addressed them in the visualization you created.
 
 ### Exercise 2
+Q: Suppose the objective of this plot was to show that the proportion of part-time faculty have gone up over time compared to other instructional staff types. > What changes would you propose making to this plot to tell this story?
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+A: I would use (position="fill") to create a digestible visual showing the percentage of hires by year. Within each year bar, there would be five different colors for each of the faculty types. Some of my proposed codes are below.
+
+```{r proportion0}
+ggplot(staff_long, aes(y = year, fill = faculty_type)) +
+  geom_bar(position = "fill")
+```
+
+
+```{r proportion1}
+  ggplot(data = staff_long, 
+mapping = aes(y = year, fill = faculty_type)) +
+  geom_bar(position = "fill") +
+labs(x = "Percent",
+   y = "Years",
+   title = "Instructional staff employees between 1975 and 2011",
+   color = "Faculty Type"
+ ) 
+```
+
+```{r proportion2}
+ggplot(data = staff_long,
+      mapping = aes(y = year, fill = faculty_type)) +
+ geom_bar(position = "fill")
+```
+
+```{r proportion3}
+ggplot(staff_long, aes(y= year, fill = faculty_type)) +
+  geom_bar(position = "fill")
+coord_flip()
+```
+
+
+```{r facultyprop}
+staff_long <- staff_long %>%
+mutate(facultyprop = fct_infreq("Full-Time Tenured Faculty", "Full-Time Tenure-Track Faculty", "Full-Time Non-Tenure-Track Faculty", "Part-Time Faculty", "Graduate Student Employees"))
+```
+
 
 ### Exercise 3
+My first bit of advice would be to chop the top 3/4 off of the harvested tons visual. Above 20 million tons, there is no useful information. Unless one wants to highlight China's vast harvest, there really is no point to the upper part of the visual. 
+Additionally, the aggregate data can be interesting, but also unhelpful for understanding a country's per capita harvest. If we want to look at a society's consumption level, individual-level measurements make sense as a gauge that can be compared with other nations' per capita averages. 
+Also, if our friend cannot articulate a compelling reason for having separate visuals for aquaculture and capture, I would recommend that he combined them in order to de-clutter the visualization. 
 
-...
+```{r fisheries}
+fisheries <- read_csv("data/fisheries.csv")               
+```
 
-Add exercise headings as needed.
+
+### Exercise 4
+
+
+### Exercise 5
+
+
+### Exercise 6
+
+
+### Exercise 7
+
