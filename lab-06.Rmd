@@ -62,54 +62,11 @@ Q: Suppose the objective of this plot was to show that the proportion of part-ti
 
 A: I would use (position="fill") to create a digestible visual showing the percentage of hires by year. Within each year bar, there would be five different colors for each of the faculty types. Some of my proposed codes are below.
 
-```{r FromFacetedBarCode}
-ggplot(staff_long, 
-mapping = aes(x = year, fill = faculty_type)) +
- geom_bar(position = "fill") +
- labs(
-   x = "_Year",
-   y = "Proportion",
-   title = "_Title",
-   fill = "Faculty Type"
- ) +
-coord_flip()
+```{r FacetedBarPlot1}
+ggplot(staff_long, aes(y = year, x = value, fill = faculty_type)) +
+  geom_col(position = "fill")
 ```
 
-
-```{r proportion0}
-ggplot(staff_long, aes(y = year, fill = faculty_type)) +
-  geom_bar(position = "fill")
-```
-
-
-```{r proportion1}
-  ggplot(data = staff_long, 
-mapping = aes(y = year, fill = faculty_type)) +
-  geom_bar(position = "fill") +
-labs(x = "Percent",
-   y = "Years",
-   title = "Instructional staff employees between 1975 and 2011",
-   color = "Faculty Type"
- ) 
-```
-
-```{r proportion2}
-ggplot(data = staff_long,
-      mapping = aes(y = year, fill = faculty_type)) +
- geom_bar(position = "fill")
-```
-
-```{r proportion3}
-ggplot(staff_long, aes(y= year, fill = faculty_type)) +
-  geom_bar(position = "fill")
-coord_flip()
-```
-
-
-```{r facultyprop}
-staff_long <- staff_long %>%
-mutate(facultyprop = fct_infreq("Full-Time Tenured Faculty", "Full-Time Tenure-Track Faculty", "Full-Time Non-Tenure-Track Faculty", "Part-Time Faculty", "Graduate Student Employees"))
-```
 
 
 ### Exercise 3
@@ -135,39 +92,109 @@ data(Whickham)
 ```
 
 
-1.What type of study do you think these data come from: observational or experiment? Why?
-Observational, because there was no random assignment
+Q1.What type of study do you think these data come from: observational or experiment? Why?
+A: Observational, because there was no random assignment
 
-2. How many observations are in this dataset? What does each observation represent?
-1314 observations on women on variables pertaining to smoking and mortality.
+Q2. How many observations are in this dataset? What does each observation represent?
+A: 1314 observations on women on variables pertaining to smoking and mortality.
 
-3. How many variables are in this dataset? What type of variable is each? Display each variable using an appropriate visualization.
-3 variables in the dataset: 
+Q3. How many variables are in this dataset? What type of variable is each? Display each variable using an appropriate visualization.
+A: 3 variables in the dataset: 
 1) outcome survival status after 20 years: a factor with levels Alive Dead
 2) smoker smoking status at baseline: a factor with levels No Yes
 3) age (in years) at the time of the first survey
 
-4. What would you expect the relationship between smoking status and health outcome to be?
-I would expect smoking to be associated with substantially lower survival outcomes.
+Q4. What would you expect the relationship between smoking status and health outcome to be?
+A: I would expect smoking to be associated with substantially lower survival outcomes.
 
-5. Create a visualization depicting the relationship between smoking status and health outcome. Briefly describe the relationship, and evaluate whether this meets your expectations. Additionally, calculate the relevant conditional probabilities to help your narrative. 
+Q5. Create a visualization depicting the relationship between smoking status and health outcome. Briefly describe the relationship, and evaluate whether this meets your expectations. Additionally, calculate the relevant conditional probabilities to help your narrative. 
+A: 
+P(Alive|non-Smoker) = 0.69
+P(Dead|non-Smoker) = 0.31
+P(Alive|Smoker) = 0.76
+P(Dead|Smoker) = 0.24
+
 
 ```{r smoking}
 Whickham %>%
   count(smoker, outcome)
 ```
 
+```{r smokers1}
+Whickham %>%
+  count(smoker, outcome) %>%
+  group_by(smoker) %>%
+  mutate(prop_outcome = n / sum(n))
+```  
 
 ```{r smokers}
 ggplot(Whickham, aes(x = outcome,
                  fill = smoker)) +     
-geom_histogram() +
+geom_bar() +
 labs(title = "Smoking is bad")
 ```
 
 
 ### Exercise 6
+Create a new variable called age_cat using the following scheme:
 
+```{r Ex6}
+Whickham <- Whickham %>%
+  mutate(age_cat = case_when(age <= 44 ~ "18-44",
+    age > 44 & age <= 64 ~ "45-64",
+    age > 64 ~ "65+"))
+```
 
 ### Exercise 7
+Re-create the visualization depicting the relationship between smoking status and health outcome, faceted by age_cat. What changed? What might explain this change? Extend the contingency table from earlier by breaking it down by age category and use it to help your narrative.
+
+```{r Ex7.1}
+Whickham %>%
+mutate(age_cat, smoker, outcome)
+```
+  
+  
+```{r Ex7.2}
+Whickham %>%
+  count(age_cat, smoker, outcome) %>%
+  pivot_wider(names_from = age_cat, values_from = n) 
+```  
+  
+  scale_x_continuous(labels = label_percent(scale = 100,
+  prefix = "",
+  suffix = "%",
+  big.mark = " ",
+  decimal.mark = ".")) +
+  
+```{r Ex7.3}
+ggplot(Whickham, aes(y = smoker, fill = outcome)) +
+  geom_bar(position = "fill") +
+  facet_wrap(. ~ age_cat) +
+  labs(title = "Life outcome by smoking status and age group",
+       x = NULL, y = "Smoker", fill = NULL) +
+  theme(legend.position = "bottom")
+```   
+  
+  
+  It appears that the code worked, however there is no meaningul output that I am aware of. 
+  
+```{r Ex7.4}
+  Whickham %>%
+  count(age_cat, smoker, outcome) %>%
+  group_by(age_cat, smoker) %>%
+  mutate(
+    n_smoker  = sum(n),
+    prop_fatality = n / n_smoker
+    ) %>%
+  filter(outcome == "Fatality") %>%
+  rename(n_fatality = n) %>%
+  select(-outcome) %>%
+  print(n = 20)
+```
+  
+
+
+
+
+  
 
