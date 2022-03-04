@@ -176,7 +176,7 @@ ggplot(Whickham, aes(y = smoker, fill = outcome)) +
 ```   
   
   
-  It appears that the code worked, however there is no meaningul output that I am aware of. 
+  It appears that the code worked, however there is no meaninful output that I am aware of. 
   
 ```{r Ex7.4}
   Whickham %>%
