@@ -32,13 +32,13 @@ staff_long <- staff %>%
   mutate(value = as.numeric(value))
 ```
 
-```{r lineplot}
+```{r lineplot1}
 staff_long %>%
   ggplot(aes(x = year, y = value, color = faculty_type)) +
   geom_line()
 ```
 
-```{r lineplot}
+```{r lineplot2}
 staff_long %>%
   ggplot(aes(x = year, y = value, group = faculty_type, color = faculty_type)) +
   geom_line() +
@@ -60,7 +60,7 @@ A: My goal is to visualize the most relevant aspect of the data. The way to do t
 ### Exercise 2
 Q: Suppose the objective of this plot was to show that the proportion of part-time faculty have gone up over time compared to other instructional staff types. What changes would you propose making to this plot to tell this story?
 
-A: I would use (position="fill") to create a digestible visual showing the percentage of hires by year. Within each year bar, there would be five different colors for each of the faculty types. Some of my proposed codes are below.
+A: I would use (position="fill") to create a digestible visual showing the percentage of hires by year. Within each year bar, there would be five different colors for each of the faculty types. 
 
 ```{r FacetedBarPlot1}
 ggplot(staff_long, aes(y = year, x = value, fill = faculty_type)) +
@@ -74,19 +74,19 @@ My first bit of advice would be to chop the top 3/4 off of the harvested tons vi
 Additionally, the aggregate data can be interesting, but also unhelpful for understanding a country's per capita harvest. If we want to look at a society's consumption level, individual-level measurements make sense as a gauge that can be compared with other nations' per capita averages. 
 Also, if our friend cannot articulate a compelling reason for having separate visuals for aquaculture and capture, I would recommend that he combined them in order to de-clutter the visualization. 
 
-```{r fisheries}
+```{r fisheries1}
 fisheries <- read_csv("data/fisheries.csv")               
 ```
 
 
 #Stretch Practice
 
-```{r fisheries}
+```{r fisheries2}
 library(tidyverse) 
 library(mosaicData)               
 ```
 
-```{r fisheries}
+```{r fisheries3}
 data(Whickham)  
 ?Whickham
 ```
